@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💌 From Wraken to Red</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#efe6d8;
+      --accent:#b85b79;
+      --paper:#fbf5ec;
+      --dark:#3b2b2b;
+      --light-pink:#f6dce2;
+    }
+    html, body {height:100%;}
+    body {
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(180deg,#efe6d8 0%, #e6d0b9 100%);
+      font-family: 'Cormorant Garamond', serif;
+      color:var(--dark);
+    }
+    .scene {
+      width:920px;
+      max-width:95%;
+      height:640px;
+      background:var(--paper);
+      box-shadow:0 30px 60px rgba(0,0,0,0.2);
+      border-radius:14px;
+      position:relative;
+      overflow:hidden;
+      border:6px solid rgba(59,43,43,0.06);
+    }
+    header {padding:28px 40px;display:flex;align-items:center;gap:18px}
+    .logo {font-size:44px}
+    .subtitle {font-family:'Great Vibes', cursive;font-size:22px;color:var(--accent);}
+    .center {height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .envelope-wrap {position:relative;width:360px;height:260px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .envelope {
+      width:320px;height:200px;background:#fdeee9;border-radius:8px;border:3px solid #cdaaa3;position:relative;
+      box-shadow:0 8px 18px rgba(0,0,0,0.12);transform-origin:center;
+      transition:transform .9s cubic-bezier(.2,.9,.2,1),opacity .4s;
+    }
+    .envelope .flap {
+      position:absolute;top:-28px;left:0;right:0;height:60px;
+      background:linear-gradient(180deg,#f7dfe0,#f0cfcf);
+      border:3px solid #cdaaa3;border-bottom:none;
+      border-top-left-radius:8px;border-top-right-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .heart {font-size:40px;cursor:pointer;user-select:none;}
+    .shadow {position:absolute;left:50%;transform:translateX(-50%);bottom:8px;width:200px;height:14px;background:radial-gradient(closest-side,rgba(0,0,0,0.25),transparent);border-radius:50%}
+    .envelope.open {transform:translateY(-18px) rotateX(8deg) scale(1.02)}
+    .envelope.open .flap {transform-origin:top center;transform:translateY(-36px) rotateX(160deg);transition:transform .9s ease}
+    .modal {position:absolute;left:40px;top:120px;width:420px;padding:20px;background:rgba(255,250,242,0.98);
+      border:2px solid rgba(59,43,43,0.06);box-shadow:0 12px 30px rgba(0,0,0,0.12);border-radius:10px}
+    .bubble {font-size:18px;margin-bottom:12px}
+    .btn {display:inline-block;padding:8px 14px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;cursor:pointer;border:none;font-weight:600}
+    .letter-popup {
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:520px;
+      max-width:82%;
+      background:linear-gradient(180deg,#fffdf6,#fff6ea);
+      padding:26px;
+      border-radius:10px;
+      border:3px solid rgba(59,43,43,0.06);
+      box-shadow:0 30px 70px rgba(0,0,0,0.25);
+      opacity:0;
+      transition:all .5s cubic-bezier(.2,.9,.2,1);
+      font-size:18px;
+      z-index:10;
+    }
+    .letter-popup.show {opacity:1;transform:translate(-50%,-50%) scale(1);}
+    .letter-title {font-family:'Great Vibes';font-size:36px;color:var(--accent);margin-bottom:6px;text-align:center;}
+    .letter-body {
+      white-space:pre-wrap;
+      line-height:1.4;
+      color:#3b2b2b;
+      padding:10px;
+      border-radius:6px;
+      font-family:'Great Vibes', cursive;
+      font-size:18px;
+      letter-spacing:0.25px;
+      max-height:360px;
+      overflow-y:auto;
+      scrollbar-width:thin;
+      scrollbar-color:#d8b6b6 transparent;
+      position:relative;
+    }
+    .letter-body::-webkit-scrollbar {width:6px;}
+    .letter-body::-webkit-scrollbar-thumb {background:#d8b6b6;border-radius:10px;}
+    .choice-buttons {
+      display:none;
+      justify-content:space-between;
+      margin-top:10px;
+      padding:0 10px;
+      font-weight:600;
+      color:var(--accent);
+    }
+    .choice-buttons span {
+      cursor:pointer;
+      border:1px solid var(--light-pink);
+      padding:4px 10px;
+      border-radius:6px;
+      transition:background 0.3s;
+    }
+    .choice-buttons span:hover {background:rgba(246,220,226,0.25);}
+    .no-response {
+      margin-top:10px;
+      font-size:16px;
+      color:var(--dark);
+      text-align:center;
+      opacity:0;
+      transition:opacity 1s ease;
+    }
+    .no-response.show {opacity:1;}
+    .kissing {position:absolute;left:50%;transform:translateX(-50%);bottom:40px;width:240px;height:140px;background:linear-gradient(180deg,#fff3f8,#fff6f9);
+      border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 40px rgba(0,0,0,0.12);opacity:0;pointer-events:none}
+    .kissing.show {opacity:1;pointer-events:auto;transition:opacity .6s}
+    .pair {display:flex;gap:18px;align-items:center}
+    .face {width:86px;height:86px;border-radius:50%;background:#f6d1d8;display:flex;align-items:center;justify-content:center;position:relative;font-size:36px}
+    .face:after {content:'❤';position:absolute;right:6px;bottom:8px;font-size:18px;opacity:0;transform:translateY(6px);animation:pop 1s infinite}
+    @keyframes pop {0%{opacity:0;transform:translateY(6px)}50%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-8px)}}
+    footer {position:absolute;bottom:12px;left:20px;right:20px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#6b5a55}
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <header>
+      <div class="logo">💌</div>
+      <div>
+        <div class="subtitle">A Letter from Wraken</div>
+        <div style="font-size:12px;color:#7a6b6b">From Wraken to Red</div>
+      </div>
+    </header>
+    
+    <div class="center">
+      <div class="envelope-wrap" id="envelopeWrap">
+        <div class="envelope" id="envelope">
+          <div class="flap"><span class="heart" id="heart">💖</span></div>
+        </div>
+        <div class="shadow"></div>
+      </div>
+      <div id="modal" class="modal">
+        <div class="bubble" id="bubbleText">Click the heart to begin…</div>
+        <button id="startBtn" class="btn">Click here! 🫀</button>
+      </div>
+    </div>
+    
+    <div class="letter-popup" id="letter">
+      <div class="letter-title">For You, Bubba</div>
+      <div class="letter-body" id="letterBody"></div>
+      <div class="choice-buttons" id="choices">
+        <span id="yesBtn">Yes</span>
+        <span id="noBtn">No</span>
+      </div>
+      <div class="no-response" id="noResponse"></div>
+    </div>
+    
+    <div class="kissing" id="kissing">
+      <div class="pair">
+        <div class="face">(•ᴗ•)</div>
+        <div class="face">(•ᴗ•)</div>
+      </div>
+    </div>
+    
+    <footer>
+      <div>Made with ♥ by Wraken</div>
+      <div style="font-size:11px">Dedicated to Red Sorvji</div>
+    </footer>
+    
+    <!-- YouTube background music -->
+    <iframe id="ytplayer" width="1" height="1" style="display:none"
+      src="https://www.youtube.com/embed/RuX9o_3qgWc?mute=1&loop=1&playlist=RuX9o_3qgWc"
+      title="Dalangin by Earl Agustin" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+  </div>
+  
+  <script>
+  const messages = [
+    'For a better experience, please wait and wear headphones!',
+    'Hi, bubbbaaa! Ito na yung birthday gift ko sayo na nadelay ng sobra.',
+    "Simple lang ‘to kaya 'wag ka masyadong mag-expect.",
+    "Ito lang din kinaya ng bubba mo kaya pagpasensyahan mo na.",
+    'Hindi ko alam kung mahilig ka ba sa mga ganito pero ito lang yung gift na naisip ko na memorable at pupwede mong balik-balikan kahit kelan.',
+    'Hindi ko ip-private yung link kaya kapag namiss mo ako, open mo lang \'to.',
+    'From your handsome bubba, Wraken! 💋'
+  ];
+
+  const longLetter = `Hi, bubba! Birthday ko ngayon pero dahil special ka, may regalo rin ako sayo. Bago 'yan, 'di ako magaling sa salita kaya pagpasensyahan mo na ako hehe.
+
+11 months na tayong magkakilala at masasabi ko na worth it lahat ng pang-aaway mo sa'kin. Hindi ko inaasahan na tatagal pala tayo ng ganito, parang dati lang napakataray mo sa'kin eh. Gusto ko lang sabihin sa'yo na masaya ako kapag kausap kita. Ikaw yung pahinga ko kahit palagi kitang nakakatulugan. Hindi ko alam kung mahilig ka ba sa mga ganito, pero ito lang kasi yung unang pumasok sa isip ko na regalo sa'yo.
+
+Sobrang pinag-isipan ko 'to ng husto na ikaw yung nasa isip ko habang ginagawa ko 'to kaya sana ma-appreciate mo. Mag-iingat ka palagi dyan sa dorm. Magpakabait ka rin lagi, 'wag mong aawayin yung pet peeve mo kahit araw-araw banas na banas kana sa kanya.
+
+Bukod dyan, gusto ko lang din kunin yung chance na 'to to formally ask you out, gusto ko malaman mo na yung pinapakita ko at yung intensyon ko sa'yo ay totoo. Kung ano man yung meron tayo ngayon, gusto kong maging malinaw. I want to know you more not as a friend but in a deeper and genuine way.
+
+Red, will you allow me to court you?`;
+
+  const modal=document.getElementById('modal');
+  const bubbleText=document.getElementById('bubbleText');
+  const startBtn=document.getElementById('startBtn');
+  const envelope=document.getElementById('envelope');
+  const heart=document.getElementById('heart');
+  const letter=document.getElementById('letter');
+  const letterBody=document.getElementById('letterBody');
+  const choices=document.getElementById('choices');
+  const yesBtn=document.getElementById('yesBtn');
+  const noBtn=document.getElementById('noBtn');
+  const noResponse=document.getElementById('noResponse');
+  const kissing=document.getElementById('kissing');
+  const ytplayer=document.getElementById('ytplayer');
+
+  let idx=0;
+  let textFinished=false;
+
+  function showNextMessage(){
+    if(idx < messages.length){
+      bubbleText.textContent = messages[idx];
+      idx++;
+      startBtn.textContent = idx < messages.length ? 'Next 💌' : 'Open the Letter 💌';
+    } else {
+      modal.style.display='none';
+      envelope.classList.add('open');
+      setTimeout(openLetter,1400);
+    }
+  }
+
+  startBtn.addEventListener('click', showNextMessage);
+
+  heart.addEventListener('click', () => {
+    ytplayer.src = "https://www.youtube.com/embed/RuX9o_3qgWc?autoplay=1&mute=0&loop=1&playlist=RuX9o_3qgWc";
+    showNextMessage();
+  });
+
+  function typeText(text,el,speed=18){
+    el.textContent='';
+    let i=0;
+    (function step(){
+      if(i<text.length){
+        el.textContent+=text[i++];
+        setTimeout(step,speed);
+      } else {
+        textFinished=true;
+      }
+    })();
+  }
+
+  function openLetter(){
+    letter.classList.add('show');
+    typeText(longLetter,letterBody,18);
+  }
+
+  letterBody.addEventListener('scroll',()=>{
+    const atBottom = letterBody.scrollTop + letterBody.clientHeight >= letterBody.scrollHeight - 10;
+    if(atBottom && textFinished){
+      choices.style.display='flex';
+    } else {
+      choices.style.display='none';
+    }
+  });
+
+  yesBtn.addEventListener('click',()=>{
+    letter.classList.remove('show');
+    envelope.classList.remove('open');
+    kissing.classList.add('show');
+    setTimeout(()=>{kissing.classList.remove('show');},12000);
+  });
+
+  noBtn.addEventListener('click',()=>{
+    noResponse.classList.add('show');
+    noResponse.textContent="Are you sure about that, bubba? Please think again...";
+    setTimeout(()=>{
+      noResponse.textContent="";
+    },3000);
+  });
+  </script>
+</body>
+</html>
