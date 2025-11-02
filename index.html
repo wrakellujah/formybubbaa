@@ -177,7 +177,7 @@
     
     <!-- YouTube background music -->
     <iframe id="ytplayer" width="1" height="1" style="display:none"
-      src="https://www.youtube.com/embed/RuX9o_3qgWc?mute=1&loop=1&playlist=RuX9o_3qgWc"
+      src="https://www.youtube.com/embed/RuX9o_3qgWc?autoplay=1&mute=1&loop=1&playlist=RuX9o_3qgWc"
       title="Dalangin by Earl Agustin" frameborder="0" allow="autoplay; encrypted-media"></iframe>
   </div>
   
@@ -219,6 +219,13 @@ Red, will you allow me to court you?`;
   let idx=0;
   let textFinished=false;
 
+  // Unmute when heart is clicked
+  heart.addEventListener('click', () => {
+    const src = "https://www.youtube.com/embed/RuX9o_3qgWc?autoplay=1&mute=0&loop=1&playlist=RuX9o_3qgWc";
+    ytplayer.src = src;
+    showNextMessage();
+  });
+
   function showNextMessage(){
     if(idx < messages.length){
       bubbleText.textContent = messages[idx];
@@ -232,11 +239,6 @@ Red, will you allow me to court you?`;
   }
 
   startBtn.addEventListener('click', showNextMessage);
-
-  heart.addEventListener('click', () => {
-    ytplayer.src = "https://www.youtube.com/embed/RuX9o_3qgWc?autoplay=1&mute=0&loop=1&playlist=RuX9o_3qgWc";
-    showNextMessage();
-  });
 
   function typeText(text,el,speed=18){
     el.textContent='';
